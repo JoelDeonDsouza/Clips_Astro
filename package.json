@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "generate": "drizzle-kit generate --config=drizzle.config.ts",
+    "push": "drizzle-kit push --config=drizzle.config.ts",
     "preview": "astro preview",
     "astro": "astro"
   },
