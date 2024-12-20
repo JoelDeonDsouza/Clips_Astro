@@ -1,0 +1,34 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { db } from "../db";
+import { CldUploadWidget } from "astro-cloudinary";
+import { CloudUpload } from "lucide-react";
+const currentUser = Astro.locals.user;
+---
+
+<Layout>
+  <main>
+    <section class="flex flex-col items-center gap-2">
+      <img
+        src={currentUser?.image}
+        alt="ProfileImgCurrentUser"
+        class="w-28 rounded-full pb-2"
+      />
+      <h1 class="text-1xl text-base-content font-bold brightness-125">
+        Welcome back, {currentUser?.name}
+      </h1>
+      <CldUploadWidget
+        uploadPreset="clip_astro"
+        id="upload-events"
+        signatureEndpoint={"/api/signed"}
+      >
+        <button class="btn btn-primary">
+          <div class="flex items-center gap-2">
+            <span>Upload</span>
+            <CloudUpload size="24" />
+          </div>
+        </button>
+      </CldUploadWidget>
+    </section>
+  </main>
+</Layout>

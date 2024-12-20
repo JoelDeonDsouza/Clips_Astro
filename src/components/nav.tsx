@@ -12,6 +12,12 @@ type NavProps = {
 } & AstroClientDirectives;
 
 export default function Nav({ sesh }: NavProps) {
+  if (sesh && typeof window !== "undefined") {
+    // If the user is logged in, automatically redirect to dashboard //
+    if (window.location.pathname !== "/dashboard") {
+      window.location.replace("/dashboard");
+    }
+  }
   return (
     <nav className="py-6">
       <ul className="flex justify-between items-center">
