@@ -1,0 +1,74 @@
+---
+import type { User } from "better-auth";
+import type { TImagePost } from "../lib/infer-type";
+import type { AstroClientDirectives } from "astro";
+import { getCldImageUrl, getCldVideoUrl } from "astro-cloudinary/helpers";
+import { CldImage } from "astro-cloudinary";
+
+type Props =
+  | ({
+      currentUser: User | null;
+      imgData: TImagePost;
+    } & AstroClientDirectives)
+  | any;
+
+const { currentUser, imgData: img } = Astro.props;
+
+const cldVideoPreview = getCldVideoUrl({
+  src: img.url,
+  rawTransformations: "e_preview",
+});
+---
+
+<div class="card p-8 bg-base-300">
+  <div class="flex items-center gap-2 pb-4">
+    <img src={img.user.image} class="avatar w-8 rounded-full" />
+    <a href={`profile/${img.user.id}`}><p>{img.user.name}</p></a>
+    <p class="text-xs ml-auto">
+      posted {new Date(img.createdAt).toLocaleDateString()}
+    </p>
+  </div>
+  <div class="h-full bg-base-200 group flex relative items-center">
+    <div
+      aria-hidden
+      class="absolute left-0 top-0 h-full w-full bg-black z-10 opacity-0 group-hover:opacity-20 pointer-events-none transition-opacity"
+    >
+    </div>
+    <a
+      href={`/posts/${img.id}`}
+      class="absolute top-1/2 left-1/2 pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 transition transform -translate-x-1/2 -translate-y-1/2 z-20 hover:text-white font-bold text-2xl"
+      >Check Post</a
+    >
+    {
+      img.format === "mp4" ? (
+        <video class="video-preview h-[32rem] w-full" src={cldVideoPreview} />
+      ) : (
+        <CldImage
+          src={getCldImageUrl({ src: img.url })}
+          alt={img.description}
+        />
+      )
+    }
+  </div>
+</div>
+
+<script>
+  (function () {
+    const videos = document.querySelectorAll(
+      ".video-preview"
+    ) as NodeListOf<HTMLVideoElement>;
+    if (!videos) return;
+    videos.forEach((video) => {
+      video.addEventListener("ended", (e) => {
+        video.currentTime = 0;
+        video.play();
+      });
+      video.addEventListener("mouseover", function () {
+        video.play();
+      });
+      video.addEventListener("mouseout", function () {
+        video.pause();
+      });
+    });
+  })();
+</script>

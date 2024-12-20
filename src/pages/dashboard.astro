@@ -3,7 +3,15 @@ import Layout from "../layouts/Layout.astro";
 import { db } from "../db";
 import { CldUploadWidget } from "astro-cloudinary";
 import { CloudUpload } from "lucide-react";
+import { eq } from "drizzle-orm";
+import { userPost } from "../db/schema";
 const currentUser = Astro.locals.user;
+import Post from "../components/post.astro";
+
+const posts = await db.query.userPost.findMany({
+  where: eq(userPost.userId, currentUser?.id!),
+  with: { likes: true, comments: true, user: true },
+});
 ---
 
 <Layout>
@@ -30,5 +38,42 @@ const currentUser = Astro.locals.user;
         </button>
       </CldUploadWidget>
     </section>
+    <section class="card">
+      <h2 class="pb-4 text-3xl">My posts</h2>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {
+          posts.length === 0 ? (
+            <p>Not posts uploaded</p>
+          ) : (
+            posts.map((post) => <Post imgData={post} />)
+          )
+        }
+      </div>
+    </section>
   </main>
 </Layout>
+
+<script>
+  import { actions } from "astro:actions";
+
+  const widget = document.querySelector("#upload-events");
+  if (widget) {
+    widget.addEventListener("clduploadwidget:success", async (event) => {
+      // @ts-ignore
+      const imageUrl = event.detail.info.public_id as string;
+      // @ts-ignore
+      const format = event.detail.info.format as string;
+      const { data, error } = await actions.addImage({
+        format,
+        publicId: imageUrl,
+      });
+      if (error) {
+        console.log(error);
+      }
+      if (data) {
+        console.log(data);
+        window.location.href = "/dashboard";
+      }
+    });
+  }
+</script>
