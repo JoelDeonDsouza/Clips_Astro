@@ -4,13 +4,35 @@ import { db } from "../db";
 import { CldUploadWidget } from "astro-cloudinary";
 import { CloudUpload } from "lucide-react";
 import { eq } from "drizzle-orm";
-import { userPost } from "../db/schema";
+import { postLikes, userPost } from "../db/schema";
 const currentUser = Astro.locals.user;
 import Post from "../components/post.astro";
 
 const posts = await db.query.userPost.findMany({
   where: eq(userPost.userId, currentUser?.id!),
   with: { likes: true, comments: true, user: true },
+});
+
+const likes = await db.query.postLikes.findMany({
+  where: eq(postLikes.userId, currentUser?.id!),
+  with: {
+    user: true,
+    post: {
+      with: {
+        user: true,
+        likes: true,
+        comments: true,
+      },
+    },
+  },
+});
+
+const structuredLikes = likes.map((like) => {
+  return {
+    ...like.post,
+    likes: like.post.likes,
+    user: like.post.user,
+  };
 });
 ---
 
@@ -45,7 +67,23 @@ const posts = await db.query.userPost.findMany({
           posts.length === 0 ? (
             <p>Not posts uploaded</p>
           ) : (
-            posts.map((post) => <Post imgData={post} />)
+            posts.map((post) => (
+              <Post imgData={post} currentUser={currentUser} />
+            ))
+          )
+        }
+      </div>
+    </section>
+    <section class="card">
+      <h2 class="pb-4 text-3xl pt-10">My liked posts</h2>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {
+          likes.length === 0 ? (
+            <p class="pb-10">No liked posts</p>
+          ) : (
+            structuredLikes.map((post) => (
+              <Post imgData={post} currentUser={currentUser} />
+            ))
           )
         }
       </div>

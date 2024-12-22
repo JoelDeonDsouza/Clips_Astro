@@ -4,6 +4,9 @@ import type { TImagePost } from "../lib/infer-type";
 import type { AstroClientDirectives } from "astro";
 import { getCldImageUrl, getCldVideoUrl } from "astro-cloudinary/helpers";
 import { CldImage } from "astro-cloudinary";
+import Likes from "./likes";
+import Visibility from "./visibility";
+import DeletePost from "./delete-post";
 
 type Props =
   | ({
@@ -49,6 +52,11 @@ const cldVideoPreview = getCldVideoUrl({
         />
       )
     }
+  </div>
+  <div class="flex items-center gap-6 pt-4">
+    <Likes client:load postData={img} currentUser={currentUser} />
+    <Visibility client:load postData={img} currentUser={currentUser} />
+    <DeletePost client:load postData={img} currentUser={currentUser} />
   </div>
 </div>
 
