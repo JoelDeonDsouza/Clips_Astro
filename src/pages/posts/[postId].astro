@@ -1,0 +1,134 @@
+---
+import { db } from "../../db";
+import { userPost } from "../../db/schema";
+import { eq } from "drizzle-orm";
+import type { TImagePost } from "../../lib/infer-type";
+import { getCldImageUrl } from "astro-cloudinary/helpers";
+import Layout from "../../layouts/Layout.astro";
+import { CldVideoPlayer, CldImage } from "astro-cloudinary";
+import CommentForm from "../../components/comments";
+
+export async function getStaticPaths() {
+  const posts = await db.query.userPost.findMany({
+    where: eq(userPost.visibility, true),
+    with: { user: true, likes: true, comments: true },
+  });
+  return posts.map((post) => ({
+    params: { postId: post.id },
+    props: { imgData: post },
+  }));
+}
+
+interface Props {
+  imgData: TImagePost;
+}
+
+const { postId } = Astro.params;
+const currentUser = Astro.locals.user;
+
+const post = await db.query.userPost.findFirst({
+  where: eq(userPost.id, postId!),
+  with: {
+    user: true,
+    likes: true,
+    comments: { with: { user: true, post: true } },
+  },
+});
+
+if (!post) {
+  return Astro.redirect("/404");
+}
+---
+
+<Layout>
+  <main class="container mx-auto px-4 pl-64 pr-64 py-8">
+    <div
+      class="max-w-4xl mx-auto bg-base-300 rounded-lg overflow-hidden shadow-lg"
+    >
+      <div class="p-6">
+        <div class="flex items-center justify-between gap-4 mb-4">
+          <div class="flex items-center gap-3">
+            <img
+              src={post.user.image}
+              alt={`${post.user.name}'s profile picture`}
+              class="w-12 h-12 rounded-full object-cover"
+            />
+            <div>
+              <a
+                href={`/profile/${post.user.id}`}
+                class="font-bold hover:underline">{post.user.name}</a
+              >
+              <p class="text-sm text-gray-500">
+                posted {new Date(post.createdAt).toLocaleDateString()}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Display video and img -->
+    <div class="mb-4 bg-base-200 flex justify-center">
+      {
+        post.format === "mp4" ? (
+          <CldVideoPlayer
+            src={post.url}
+            width={600}
+            height={600}
+            class="w-full h-full max-w-full max-h-[500px] object-contain"
+          />
+        ) : (
+          <CldImage
+            src={getCldImageUrl({ src: post.url })}
+            alt={post.description}
+            class="max-w-[500px] h-auto  max-h-[500px] object-contain"
+          />
+        )
+      }
+    </div>
+
+    <!-- Display likes -->
+    <div>
+      <p>Likes:{post.likes?.length || 0}</p>
+      {post.format && <p>Format: {post.format}</p>}
+    </div>
+    <!-- Display comments -->
+    <CommentForm
+      imgData={post}
+      currentUser={currentUser}
+      onCommentAdded={(comment) => console.log(comment)}
+      client:load
+    />
+    {
+      post.comments && post.comments.length > 0 ? (
+        <div class="space-y-4">
+          {post.comments.map((comment) => (
+            <div class="bg-base-300 p-4 rounded-lg">
+              <div class="flex items-center mb-2">
+                <img
+                  src={comment.user.image}
+                  alt={`${comment.user.name}'s profile picture`}
+                  class="w-8 h-8 rounded-full object-cover"
+                />
+                <div class="ml-2">
+                  <a
+                    href={`/profile/${comment.user.id}`}
+                    class="font-bold hover:underline"
+                  >
+                    {comment.user.name}
+                  </a>
+                  <p class="text-sm text-gray-500">
+                    commented {new Date(comment.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+              <p>{comment.comment}</p>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <span class="text-gray-500 text-center">No comments</span>
+      )
+    }
+  </main>
+</Layout>

@@ -115,6 +115,39 @@ export const server = {
     },
   }),
 
+  addComment: defineAction({
+    input: z.object({
+      postId: z.string(),
+      comment: z
+        .string()
+        .min(1, "comment can't be empty")
+        .max(500, "comment can't be longer than 500 characters"),
+    }),
+    handler: async ({ postId, comment }, context) => {
+      const currentUser = context.locals.user?.id;
+      if (!currentUser) {
+        throw new Error("Unauthorized");
+      }
+      try {
+        const newComment = await db
+          .insert(postComments)
+          .values({
+            id: createId(),
+            userId: currentUser,
+            postId,
+            comment,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .returning();
+        return { success: true, content: newComment[0] };
+      } catch (error) {
+        console.error("Error handling addComment:", error);
+        return { success: false, error: "Failed to handle add comment action" };
+      }
+    },
+  }),
+
   deletePost: defineAction({
     input: z.object({
       postId: z.string(),

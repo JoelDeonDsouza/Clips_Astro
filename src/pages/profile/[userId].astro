@@ -1,0 +1,59 @@
+---
+import { db } from "../../db";
+import { user, userPost } from "../../db/schema";
+import Layout from "../../layouts/Layout.astro";
+import Post from "../../components/post.astro";
+import { and, desc, eq } from "drizzle-orm";
+
+export async function getStaticPaths() {
+  const users = await db.query.user.findMany({});
+  return users.map((user) => ({ params: { userId: user.id } }));
+}
+
+const { userId } = Astro.params;
+const currentUser = Astro.locals.user;
+
+const profileUser = await db.query.user.findFirst({
+  where: eq(user.id, userId!),
+});
+
+// no user found //
+if (!profileUser) {
+  return Astro.redirect("/404");
+}
+
+// Filter posts //
+const posts = await db.query.userPost.findMany({
+  where: and(eq(userPost.userId, userId!), eq(userPost.visibility, true)),
+  with: { likes: true, comments: true, user: true },
+  orderBy: [desc(userPost.createdAt)],
+});
+---
+
+<Layout>
+  <section class="flex flex-col items-center gap-2">
+    <img
+      src={profileUser.image}
+      alt={`${profileUser.name}'s profile picture`}
+      class="w-20 h-20 rounded-full object-cover"
+    />
+    <h1 class="text-1xl text-base-content font-bold brightness-125">
+      {profileUser.name}
+    </h1>
+  </section>
+  <section>
+    <div class="grid lg:grid-cols-3 grid-cols-1 gap-4">
+      {
+        posts.length === 0 ? (
+          <p class="text-lg text-base-content pb-10">
+            {profileUser.name} has no posts yet.
+          </p>
+        ) : (
+          posts.map((post) => (
+            <Post key={post.id} currentUser={currentUser} imgData={post} />
+          ))
+        )
+      }
+    </div>
+  </section>
+</Layout>
