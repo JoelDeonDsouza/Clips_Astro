@@ -7,10 +7,9 @@ A simple SSR application built with Astro, Neon DB, and Cloudinary for cloud sto
 #### Core Framework
 
 ```
-- astro
-- astrojs/node
-- astrojs/react
-- astrojs/tailwind
+  astro
+  astrojs/node
+  astrojs/react
 ```
 
 #### Authentication
@@ -75,9 +74,9 @@ BETTER_AUTH_SECRET=
 
 BETTER_AUTH_URL=http://localhost:4321
 
-CLIENT_ID=
+CLIENT_ID= // Your gitHub user ID (For user authentication) //
 
-CLIENT_SECRET=
+CLIENT_SECRET= // Your gitHub access secret (For user authentication) //
 
 PUBLIC_CLOUDINARY_CLOUD_NAME=
 
@@ -90,6 +89,12 @@ CLOUDINARY_API_SECRET=
 
 ```
 https://neon.tech/docs/introduction
+```
+
+## Better Auth
+
+```
+https://www.better-auth.com/docs/introduction
 ```
 
 ## Cloudinary
