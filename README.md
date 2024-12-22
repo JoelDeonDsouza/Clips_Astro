@@ -1,48 +1,99 @@
-# Astro Starter Kit: Basics
+# 🚀 Clips_Astro
 
-```sh
-npm create astro@latest -- --template basics
+A simple SSR application built with Astro, Neon DB, and Cloudinary for cloud storage; a social posting app with features like private mode, likes, and comments.
+
+## Tech Stack
+
+#### Core Framework
+
+```
+- astro
+- astrojs/node
+- astrojs/react
+- astrojs/tailwind
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+#### Authentication
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src/
-│   ├── layouts/
-│   │   └── Layout.astro
-│   └── pages/
-│       └── index.astro
-└── package.json
+```
+ better-auth
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+#### Database
 
-## 🧞 Commands
+```
+drizzle-orm
+neondatabase/serverless
+```
 
-All commands are run from the root of the project, from a terminal:
+#### Image Handling
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+```
+cloudinary
+```
 
-## 👀 Want to learn more?
+## Screenshots
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+![App Screenshot](https://i.ibb.co/nLGHbbt/Screenshot-2024-12-22-at-5-44-59-PM.png)
+
+![App Screenshot](https://i.ibb.co/qN3mfKC/Screenshot-2024-12-22-at-5-45-13-PM.png)
+
+![App Screenshot](https://i.ibb.co/SQQ18F8/Screenshot-2024-12-22-at-5-45-49-PM.png)
+
+![App Screenshot](https://i.ibb.co/ZxSmgMy/Screenshot-2024-12-22-at-5-45-19-PM.png)
+
+## Run Locally
+
+Clone the project
+
+```bash
+  git clone https://github.com/JoelDeonDsouza/Clips_Astro.git
+```
+
+Go to the project directory
+
+Install dependencies
+
+```bash
+  npm install
+```
+
+Start server
+
+```bash
+  npm run dev
+```
+
+## .env file
+
+Ensure to include a .env file with the provided data
+
+```
+DATABASE_URL=
+
+BETTER_AUTH_SECRET=
+
+BETTER_AUTH_URL=http://localhost:4321
+
+CLIENT_ID=
+
+CLIENT_SECRET=
+
+PUBLIC_CLOUDINARY_CLOUD_NAME=
+
+PUBLIC_CLOUDINARY_API_KEY=
+
+CLOUDINARY_API_SECRET=
+```
+
+## Neondb
+
+```
+https://neon.tech/docs/introduction
+```
+
+## Cloudinary
+
+```
+https://cloudinary.com/
+```
